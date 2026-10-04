@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết sản phẩm</title>
+
+    <!-- Thư viện Icon FontAwesome (để hiện icon Tìm kiếm, Giỏ hàng) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- 1. File CSS chung (chứa style cho Navbar, Footer, Reset CSS) -->
+    <link rel="stylesheet" href="styles/main.css" />
+
+    <!-- 2. File CSS riêng (chứa style cho Breadcrumb, Bảng thông số, Chi tiết) -->
+    <link rel="stylesheet" href="styles/detail.css" />
+  </head>
+  <body>
+    <!-- Thanh Navigation dùng chung lấy từ index.html -->
+    <!-- Header -->
+    <header class="site-header">
+      <a href="./index.html" class="logo">Tech<span>Zone</span></a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-item">Trang chủ</a>
+
+        <!-- Ô TÌM KIẾM MỚI -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Bạn muốn mua gì hôm nay?"
+          />
+        </div>
+
+        <a href="./login.html" class="nav-item">Đăng nhập</a>
+        <a href="./cart.html" class="cart-btn">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i> Giỏ hàng
+        </a>
+      </nav>
+    </header>
+
+    <!-- Khung nội dung Chi tiết sản phẩm -->
+    <div class="detail-wrapper">
+      <div class="detail-image-box">
+        <img id="detail-img" src="" alt="" />
+      </div>
+
+      <div class="detail-info-box">
+        <h1 id="detail-title" class="detail-title">Đang tải...</h1>
+        <div id="detail-price" class="detail-price"></div>
+
+        <div class="detail-specs-container">
+          <div class="detail-specs-title">Thông số kỹ thuật nổi bật</div>
+          <table class="detail-specs-table">
+            <tbody id="detail-specs">
+              <!-- Render dữ liệu thông số tự động -->
+            </tbody>
+          </table>
+        </div>
+
+        <button id="add-cart-btn" class="detail-add-btn">
+          THÊM VÀO GIỎ HÀNG
+        </button>
+      </div>
+    </div>
+
+    <!-- Dữ liệu sản phẩm -->
+    <script src="data/products.js"></script>
+    <!-- Script xử lý trang chi tiết -->
+    <script src="scripts/detail.js"></script>
+    <!-- Thêm file auth.js để đồng bộ trạng thái đăng nhập -->
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/detail.js"></script> <!-- Hoặc file script riêng của trang detail -->
+  </body>
+</html>

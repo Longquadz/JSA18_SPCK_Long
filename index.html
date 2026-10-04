@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechZone - Shop Đồ Công Nghệ</title>
+
+    <!-- Icon FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS Tách Biệt -->
+    <link rel="stylesheet" href="./styles/main.css" />
+    <link rel="stylesheet" href="./styles/home.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <a href="./index.html" class="logo">Tech<span>Zone</span></a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-item">Trang chủ</a>
+
+        <!-- Ô TÌM KIẾM -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Bạn muốn mua gì hôm nay?"
+          />
+        </div>
+
+        <a href="./login.html" class="nav-item">Đăng nhập</a>
+        <a href="./cart.html" class="cart-btn">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i> Giỏ hàng
+        </a>
+      </nav>
+    </header>
+
+    <!-- Khung nội dung chính -->
+    <main class="main-content">
+      <div class="home-container">
+        <!-- BẮT ĐẦU HERO SECTION (LAYOUT 3 CỘT) -->
+        <section class="hero-section">
+          <!-- CỘT 1: SIDEBAR DANH MỤC DỌC -->
+          <aside class="sidebar-category">
+            <ul class="category-list">
+              <li class="category-item filter-btn active" data-cat="all">
+                <i class="fa-solid fa-border-all"></i>
+                <span>Tất cả</span>
+                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+              </li>
+              <li class="category-item filter-btn" data-cat="smartphones">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                <span>Điện thoại</span>
+                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+              </li>
+              <li class="category-item filter-btn" data-cat="laptops">
+                <i class="fa-solid fa-laptop"></i>
+                <span>Laptop</span>
+                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+              </li>
+              <li class="category-item filter-btn" data-cat="tablets">
+                <i class="fa-solid fa-tablet-screen-button"></i>
+                <span>Máy tính bảng</span>
+                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+              </li>
+              <li
+                class="category-item filter-btn"
+                data-cat="mobile-accessories"
+              >
+                <i class="fa-solid fa-headphones"></i>
+                <span>Phụ kiện</span>
+                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+              </li>
+            </ul>
+          </aside>
+
+          <!-- CỘT 2: CAROUSEL BANNER CHÍNH -->
+          <div class="main-carousel">
+            <div class="carousel-tabs">
+              <!-- Gắn thủ công data-img và data-link cho từng tab -->
+              <span
+                class="tab-item active"
+                data-slide="0"
+                data-img="https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://media-asset.cellphones.com.vn/dashboard-v1/manage-banner/home-ip18-avai.png"
+                data-link="category.html?cat=smartphones"
+              >
+                IPHONE 18 PRO
+              </span>
+
+              <span
+                class="tab-item"
+                data-slide="1"
+                data-img="https://cdnv2.tgdd.vn/mwg-static/common/News/1582805/banner%20big%20-%20mb.jpg"
+                data-link="category.html?cat=smartphones"
+              >
+                IPHONE 17 SERIES
+              </span>
+
+              <span
+                class="tab-item"
+                data-slide="2"
+                data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9sT0srg398jmmyCk30Awx1cj6eZg_k_6zk4o3A4Zwr6Vj3PMDaHE9HtA&s=10"
+                data-link="category.html?cat=laptops"
+              >
+                MACBOOK AIR
+              </span>
+            </div>
+
+            <div class="carousel-content">
+              <!-- Hiển thị ảnh và link mặc định theo Tab active (Tab 0: iPhone 18 Pro) -->
+              <a href="category.html?cat=smartphones" id="banner-link">
+                <img
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:1036:450/q:100/plain/https://media-asset.cellphones.com.vn/dashboard-v1/manage-banner/home-ip18-avai.png"
+                  id="carousel-img"
+                  alt="Hero Banner"
+                />
+              </a>
+            </div>
+          </div>
+
+          <!-- CỘT 3: BANNER PHỤ -->
+          <div class="hero-sub-banners">
+            <a href="category.html?cat=laptops" class="sub-banner-item">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv_lcWfy-VWsVGVShefJ2bGg_psOKmD9VoymGmOlmRYzPehEuuIOwFhmqB&s=10"
+                alt="Ưu đãi Laptop"
+              />
+            </a>
+            <a href="category.html?cat=smartphones" class="sub-banner-item">
+              <img
+                src="https://happyphone.vn/wp-content/uploads/2024/12/Banner-The-le-Sale-Iphone-11-va-15.webp"
+                alt="Ưu đãi Đổi cũ lấy mới"
+              />
+            </a>
+          </div>
+        </section>
+        <!-- KẾT THÚC HERO SECTION -->
+
+        <!-- BẮT ĐẦU FLASH SALE SECTION -->
+        <section class="flash-sale-section">
+          <div class="flash-sale-header">
+            <div class="flash-sale-title">
+              <i class="fa-solid fa-bolt flash-icon"></i>
+              <h2>FLASH SALE GIỜ VÀNG</h2>
+            </div>
+            <div class="countdown-timer">
+              <span>Kết thúc sau:</span>
+              <div class="timer-box" id="timer-hours">03</div> :
+              <div class="timer-box" id="timer-minutes">00</div> :
+              <div class="timer-box" id="timer-seconds">00</div>
+            </div>
+          </div>
+
+          <!-- Khung hiển thị sản phẩm Flash Sale -->
+          <div id="flash-sale-grid" class="product-grid flash-sale-grid">
+            <!-- JS render sản phẩm vào đây -->
+          </div>
+        </section>
+        <!-- KẾT THÚC FLASH SALE SECTION -->
+
+        <!-- TIÊU ĐỀ KHU VỰC SẢN PHẨM -->
+        <h2 class="section-title">Danh sách sản phẩm</h2>
+
+        <!-- Khung hiển thị sản phẩm chính -->
+        <div id="product-grid" class="product-grid">
+          <p class="status-msg">Đang tải danh sách sản phẩm...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2026 TechZone - SPCK JSA18 Project.</p>
+    </footer>
+
+    <!-- Script điều khiển -->
+    <script src="scripts/auth.js"></script>
+    <script src="data/products.js"></script>
+    <script src="scripts/home.js"></script>
+  </body>
+</html>

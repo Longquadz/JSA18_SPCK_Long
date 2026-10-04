@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ hàng - TechZone</title>
+
+    <!-- Icon FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS Tách Biệt -->
+    <link rel="stylesheet" href="./styles/main.css" />
+    <link rel="stylesheet" href="./styles/cart.css" />
+  </head>
+  <body>
+    <!-- Header chuẩn 100% theo index.html -->
+    <header class="site-header">
+      <a href="./index.html" class="logo">Tech<span>Zone</span></a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-item">Trang chủ</a>
+
+        <!-- Ô TÌM KIẾM -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Bạn muốn mua gì hôm nay?"
+          />
+        </div>
+
+        <a href="./login.html" class="nav-item">Đăng nhập</a>
+        <a href="./cart.html" class="cart-btn active">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i> Giỏ hàng
+        </a>
+      </nav>
+    </header>
+
+    <!-- Khung nội dung chính Giỏ hàng -->
+    <main class="cart-wrapper">
+      <!-- Thanh điều hướng nhỏ & Banner Freeship -->
+      <div class="cart-top-bar">
+        <a href="./index.html" class="back-link">
+          <i class="fa-solid fa-chevron-left"></i> Tiếp tục mua sắm
+        </a>
+        <div class="freeship-banner">
+          <i class="fa-solid fa-truck-fast"></i> Miễn phí vận chuyển với đơn hàng từ 300.000đ
+        </div>
+      </div>
+
+      <!-- Khung hiển thị khi GIỎ HÀNG TRỐNG -->
+      <div id="empty-cart" class="empty-cart-card" style="display: none">
+        <i class="fa-solid fa-cart-flatbed empty-icon"></i>
+        <p>Giỏ hàng của bạn đang trống</p>
+        <a href="./index.html" class="btn-shopping-now">Mua sắm ngay</a>
+      </div>
+
+      <!-- CẤU TRÚC 2 CỘT CHÍNH -->
+      <div id="cart-content" class="cart-layout">
+        <!-- CỘT TRÁI: DANH SÁCH SẢN PHẨM -->
+        <div class="cart-left-col">
+          <!-- Khung Chọn tất cả -->
+          <div class="select-all-card">
+            <label class="checkbox-label">
+              <input type="checkbox" id="select-all-btn" checked />
+              <span>Tất cả (<span id="cart-total-items">0</span> sản phẩm)</span>
+            </label>
+          </div>
+
+          <!-- Danh sách thẻ sản phẩm (Render bởi JS) -->
+          <div class="cart-items-list" id="cart-items-container">
+            <!-- JS sẽ tự đổ dữ liệu sản phẩm vào đây -->
+          </div>
+        </div>
+
+        <!-- CỘT PHẢI: THÔNG TIN ĐƠN HÀNG -->
+        <div class="cart-right-col">
+          <div class="summary-card">
+            <h2 class="summary-title">Thông tin đơn hàng</h2>
+
+            <!-- Ô Mã giảm giá -->
+            <div class="voucher-box">
+              <div class="voucher-left">
+                <i class="fa-solid fa-ticket text-red"></i>
+                <span>Áp dụng mã giảm giá</span>
+              </div>
+              <button class="btn-apply-voucher">Chọn</button>
+            </div>
+
+            <!-- Chi tiết tính tiền -->
+            <div class="summary-details">
+              <div class="summary-row">
+                <span>Số lượng sản phẩm</span>
+                <span id="summary-qty-count">0</span>
+              </div>
+              <div class="summary-row">
+                <span>Tổng tiền hàng</span>
+                <span id="subtotal-price">0đ</span>
+              </div>
+              <div class="summary-row">
+                <span>Giảm giá trực tiếp</span>
+                <span id="discount-price" class="text-green">-0đ</span>
+              </div>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <!-- Tổng tiền thanh toán -->
+            <div class="summary-row total-row">
+              <div>
+                <div class="total-label">TỔNG TIỀN</div>
+                <div class="total-subtext">
+                  (Đã bao gồm VAT và được làm tròn)
+                </div>
+              </div>
+              <span id="final-price" class="total-value">0đ</span>
+            </div>
+
+            <button id="checkout-btn" class="btn-checkout">MUA NGAY</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL CHỌN / NHẬP VOUCHER GIẢM GIÁ -->
+    <div id="voucher-modal" class="modal-overlay">
+      <div class="modal-box voucher-modal-box">
+        <div class="modal-header">
+          <h3>Chọn mã giảm giá</h3>
+          <button id="close-voucher-btn" class="close-btn">&times;</button>
+        </div>
+        
+        <!-- Ô nhập mã trực tiếp -->
+        <div class="voucher-input-group">
+          <input type="text" id="voucher-code-input" placeholder="Nhập mã giảm giá..." />
+          <button id="apply-code-btn">Áp dụng</button>
+        </div>
+
+        <!-- Danh sách mã có sẵn -->
+        <div class="voucher-list">
+          <div class="voucher-item" data-code="TECHZONE10" data-type="percent" data-value="10" data-min="0">
+            <div class="voucher-left-tag">10% OFF</div>
+            <div class="voucher-info">
+              <h4>TECHZONE10</h4>
+              <p>Giảm 10% tổng đơn hàng</p>
+            </div>
+            <button class="btn-select-voucher">Dùng</button>
+          </div>
+
+          <div class="voucher-item" data-code="TIETKIEM50K" data-type="fixed" data-value="50000" data-min="200000">
+            <div class="voucher-left-tag">50K</div>
+            <div class="voucher-info">
+              <h4>TIETKIEM50K</h4>
+              <p>Giảm 50.000đ cho đơn từ 200k</p>
+            </div>
+            <button class="btn-select-voucher">Dùng</button>
+          </div>
+
+          <div class="voucher-item" data-code="FREESHIP" data-type="fixed" data-value="30000" data-min="100000">
+            <div class="voucher-left-tag">30K</div>
+            <div class="voucher-info">
+              <h4>FREESHIP</h4>
+              <p>Miễn phí vận chuyển 30.000đ</p>
+            </div>
+            <button class="btn-select-voucher">Dùng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN THANH TOÁN -->
+    <div id="checkout-modal" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <h3>Xác nhận đặt hàng</h3>
+        <p id="modal-msg">Bạn có chắc chắn muốn thanh toán các sản phẩm đã chọn?</p>
+        <div class="modal-actions">
+          <button id="cancel-checkout-btn" class="modal-btn btn-cancel">Hủy bỏ</button>
+          <button id="confirm-checkout-btn" class="modal-btn btn-confirm">Xác nhận mua</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2026 TechZone - SPCK JSA18 Project.</p>
+    </footer>
+
+    <!-- Script điều khiển đúng thứ tự dự án -->
+    <script src="scripts/auth.js"></script>
+    <script src="data/products.js"></script>
+    <script src="scripts/cart.js"></script>
+  </body>
+</html>

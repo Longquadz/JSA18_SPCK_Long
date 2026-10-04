@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh Mục Sản Phẩm - TechZone</title>
+
+    <!-- Icon FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./styles/main.css" />
+    <link rel="stylesheet" href="./styles/category.css" />
+  </head>
+  <body>
+    <!-- Header (Giữ nguyên) -->
+    <header class="site-header">
+      <a href="./index.html" class="logo">Tech<span>Zone</span></a>
+      <nav class="nav-links">
+        <a href="./index.html" class="nav-item">Trang chủ</a>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Bạn muốn mua gì hôm nay?"
+          />
+        </div>
+
+        <a href="./login.html" class="nav-item">Đăng nhập</a>
+        <a href="./cart.html" class="cart-btn">
+          <i class="fa-solid fa-cart-shopping cart-icon"></i> Giỏ hàng
+        </a>
+      </nav>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="main-content">
+      <div class="category-container">
+        
+        <!-- Tiêu đề danh mục hiện tại -->
+        <h1 class="category-title" id="category-name">Đang tải...</h1>
+
+        <!-- FILTER BAR RIÊNG: LỌC THEO THƯƠNG HIỆU -->
+        <div class="brand-filter-bar">
+          <span class="filter-label">Thương hiệu:</span>
+          <div class="brand-list" id="brand-list">
+            <!-- JS sẽ tự động tạo các nút Thương hiệu ở đây -->
+          </div>
+        </div>
+
+        <!-- Lưới sản phẩm -->
+        <div id="product-grid" class="product-grid">
+          <p class="status-msg">Đang tải danh sách sản phẩm...</p>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2026 TechZone - SPCK JSA18 Project.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="scripts/auth.js"></script>
+    <script src="data/products.js"></script>
+    <script src="scripts/category.js"></script>
+  </body>
+</html>

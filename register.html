@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - TechZone</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles/register.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <!-- CỘT TRÁI: BANNERS & LOGO -->
+      <div class="auth-banner">
+        <div class="brand-logo">TechZone</div>
+        <div class="banner-content">
+          <h1>Gia nhập cùng<br />TechZone!</h1>
+          <p>
+            Tạo tài khoản ngay để nhận trọn bộ ưu đãi và quản lý đơn hàng dễ
+            dàng.
+          </p>
+        </div>
+        <a href="./index.html" class="back-home-link">
+          <i class="fa-solid fa-arrow-left"></i> Quay lại trang chủ
+        </a>
+      </div>
+
+      <!-- CỘT PHẢI: FORM ĐĂNG KÝ -->
+      <div class="auth-form-container">
+        <div class="auth-form-card">
+          <h2 class="auth-title">ĐĂNG KÝ</h2>
+          <p class="auth-subtitle">Tạo tài khoản mới chỉ trong vài giây</p>
+
+          <form id="register-form">
+            <div class="form-group">
+              <label for="fullname">Họ và tên</label>
+              <input
+                type="text"
+                id="fullname"
+                placeholder="Ví dụ: Nguyễn Văn A"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="username">Số điện thoại hoặc Email</label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Nhập SĐT hoặc Email..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Mật khẩu</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Tạo mật khẩu..."
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-submit">ĐĂNG KÝ TÀI KHOẢN</button>
+          </form>
+
+          <div class="auth-switch">
+            Đã có tài khoản? <a href="./login.html">Đăng nhập</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHUNG THÔNG BÁO MESSAGE BOX -->
+    <div id="custom-alert" class="custom-alert hidden">
+      <div class="alert-content">
+        <i id="alert-icon" class="fa-solid fa-circle-check"></i>
+        <p id="alert-message">Thông báo ở đây...</p>
+        <button id="alert-close-btn">Đóng</button>
+      </div>
+    </div>
+
+    <script src="scripts/auth.js"></script>
+  </body>
+</html>
