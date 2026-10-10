@@ -1,46 +1,36 @@
-/**
- * =====================================================================
- * TECHZONE AUTHENTICATION SYSTEM - CLEAN REWRITE (2026)
- * =====================================================================
- */
+// =========================================================
+// 1. BỘ HÀM BỔ TRỢ (VALIDATE & CUSTOM ALERT)
+// =========================================================
 
-// 1. CẤU HÌNH CÁC HẰNG SỐ LƯU TRỮ LOCALSTORAGE
-const STORAGE = {
-  USERS: 'registeredUsers',
-  CURRENT: 'currentUser'
-};
-
-// =====================================================================
-// 2. CÁC HÀM TIỆN ÍCH CƠ BẢN (VALIDATION & NOTIFICATION)
-// =====================================================================
-
-/**
- * Kiểm tra định dạng Email hoặc Số điện thoại (Đã fix chuẩn Regex hoàn toàn)
- */
-function isValidInput(value) {
-  const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+\$/;
-  const phoneCheck = /^0\d{9}\$/;
-
-  return emailCheck.test(value) || phoneCheck.test(value);
+// Hàm kiểm tra định dạng Email hoặc Số điện thoại Việt Nam
+// Sửa lại đúng thế này (xóa bỏ dấu \ trước dấu $)
+function isValidUsername(input) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+  return emailRegex.test(input) || phoneRegex.test(input);
 }
 
-/**
- * Hiển thị bảng thông báo tùy chỉnh hoặc fallback về alert chuẩn
- */
-function showCustomAlert(message, isSuccess = false, callback = null) {
+// Hàm hiển thị Message Box Custom
+function showAlert(message, isSuccess = false, callback = null) {
   const alertBox = document.getElementById('custom-alert');
   const alertMsg = document.getElementById('alert-message');
   const alertIcon = document.getElementById('alert-icon');
   const closeBtn = document.getElementById('alert-close-btn');
 
-  if (!alertBox || !alertMsg || !alertIcon || !closeBtn) {
+  if (!alertBox) {
     alert(message);
     if (callback) callback();
     return;
   }
 
   alertMsg.innerText = message;
-  alertIcon.className = isSuccess ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+  
+  if (isSuccess) {
+    alertIcon.className = 'fa-solid fa-circle-check';
+  } else {
+    alertIcon.className = 'fa-solid fa-circle-xmark';
+  }
+
   alertBox.classList.remove('hidden');
 
   closeBtn.onclick = () => {
@@ -49,148 +39,136 @@ function showCustomAlert(message, isSuccess = false, callback = null) {
   };
 }
 
-// =====================================================================
-// 3. XỬ LÝ SỰ KIỆN TRANG WEB (ĐĂNG KÝ & ĐĂNG NHẬP)
-// =====================================================================
-document.addEventListener('DOMContentLoaded', () => {
-  const registerForm = document.getElementById('register-form');
+
+// =========================================================
+// 2. XỬ LÝ FORM ĐĂNG KÝ VÀ ĐĂNG NHẬP (TRANG LOGIN/REGISTER)
+// =========================================================
+window.onload = () => {
   const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
 
-  // --- XỬ LÝ ĐĂNG KÝ ---
+  // Xử lý Đăng ký (Hỗ trợ đa tài khoản & Chống trùng lặp)
   if (registerForm) {
-    registerForm.addEventListener('submit', (e) => {
+    registerForm.onsubmit = (e) => {
       e.preventDefault();
+      
+      const fullname = document.getElementById('fullname').value.trim();
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
 
-      const fullnameEl = document.getElementById('fullname');
-      const usernameEl = document.getElementById('username');
-      const passwordEl = document.getElementById('password');
-
-      if (!fullnameEl || !usernameEl || !passwordEl) return;
-
-      const fullname = fullnameEl.value.trim();
-      const username = usernameEl.value.trim().toLowerCase();
-      const password = passwordEl.value;
-
-      // Validate trống
       if (!fullname || !username || !password) {
-        showCustomAlert('Vui lòng nhập đầy đủ thông tin!', false);
-        return;
+        showAlert('Vui lòng nhập đầy đủ thông tin!', false);
+        return false;
       }
 
-      // Validate định dạng
-      if (!isValidInput(username)) {
-        showCustomAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
-        return;
+      if (!isValidUsername(username)) {
+        showAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
+        return false;
       }
 
-      // Validate độ dài mật khẩu
       if (password.length < 6) {
-        showCustomAlert('Mật khẩu phải có ít nhất 6 ký tự!', false);
-        return;
+        showAlert('Mật khẩu phải có ít nhất 6 ký tự!', false);
+        return false;
       }
 
-      // Lấy danh sách tài khoản hiện có
-      let usersList = [];
-      try {
-        usersList = JSON.parse(localStorage.getItem(STORAGE.USERS)) || [];
-      } catch (err) {
-        usersList = [];
+      // 1. Lấy danh sách tài khoản hiện có từ mảng 'registeredUsers'
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+      // [Tương thích ngược] Phòng hờ dữ liệu cũ dạng đơn lẻ nếu có
+      const oldSingleUser = JSON.parse(localStorage.getItem('registeredUser'));
+      if (oldSingleUser && !users.some(u => u.username.toLowerCase() === oldSingleUser.username.toLowerCase())) {
+        users.push(oldSingleUser);
       }
 
-      // KIỂM TRA TRÙNG LẶP TRIỆT ĐỂ
-      const isDuplicate = usersList.some(user => user.username === username);
-      if (isDuplicate) {
-        showCustomAlert('❌ Tài khoản (Email/SĐT này) đã được đăng ký trước đó!', false);
-        return; 
+      // 2. Kiểm tra xem Email/SĐT này đã tồn tại hay chưa
+      const isExist = users.some(user => user.username.toLowerCase() === username);
+      if (isExist) {
+        showAlert('❌ Tài khoản (Email/SĐT này) đã được đăng ký trước đó!', false);
+        return false;
       }
 
-      // Thêm tài khoản mới
+      // 3. Thêm tài khoản mới vào mảng
       const newUser = { fullname, username, password };
-      usersList.push(newUser);
+      users.push(newUser);
 
-      // Lưu ngược lại vào localStorage
-      localStorage.setItem(STORAGE.USERS, JSON.stringify(usersList));
+      // 4. Lưu ngược lại vào localStorage và dọn dẹp khóa cũ
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
       localStorage.removeItem('registeredUser');
 
-      showCustomAlert('🎉 Đăng ký tài khoản thành công!', true, () => {
+      showAlert('Đăng ký tài khoản thành công!', true, () => {
         window.location.href = './login.html';
       });
-    });
+
+      return false;
+    };
   }
 
-  // --- XỬ LÝ ĐĂNG NHẬP ---
+  // Xử lý Đăng nhập (Tìm kiếm trong danh sách đa tài khoản)
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.onsubmit = (e) => {
       e.preventDefault();
 
-      const usernameEl = document.getElementById('username');
-      const passwordEl = document.getElementById('password');
+      const usernameInput = document.getElementById('username').value.trim().toLowerCase();
+      const passwordInput = document.getElementById('password').value;
 
-      if (!usernameEl || !passwordEl) return;
-
-      const username = usernameEl.value.trim().toLowerCase();
-      const password = passwordEl.value;
-
-      if (!username || !password) {
-        showCustomAlert('Vui lòng điền đầy đủ thông tin!', false);
-        return;
+      if (!usernameInput || !passwordInput) {
+        showAlert('Vui lòng điền đầy đủ thông tin!', false);
+        return false;
       }
 
-      if (!isValidInput(username)) {
-        showCustomAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
-        return;
+      if (!isValidUsername(usernameInput)) {
+        showAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
+        return false;
       }
 
-      // Lấy danh sách tài khoản
-      let usersList = [];
-      try {
-        usersList = JSON.parse(localStorage.getItem(STORAGE.USERS)) || [];
-      } catch (err) {
-        usersList = [];
+      // Lấy danh sách tất cả tài khoản đã đăng ký
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+      // [Tương thích ngược] Nếu chưa có mảng, kiểm tra dữ liệu đơn lẻ cũ
+      if (users.length === 0) {
+        const oldSingleUser = JSON.parse(localStorage.getItem('registeredUser'));
+        if (oldSingleUser) users.push(oldSingleUser);
       }
 
-      // Tìm kiếm user khớp thông tin
-      const foundUser = usersList.find(user => user.username === username && user.password === password);
+      // Tìm kiếm user khớp thông tin trong mảng
+      const matchedUser = users.find(user => user.username.toLowerCase() === usernameInput && user.password === passwordInput);
 
-      if (!foundUser) {
-        const isUserExist = usersList.some(user => user.username === username);
+      if (!matchedUser) {
+        const isUserExist = users.some(user => user.username.toLowerCase() === usernameInput);
         if (!isUserExist) {
-          showCustomAlert('Tài khoản chưa tồn tại! Vui lòng đăng ký trước.', false);
+          showAlert('Tài khoản chưa tồn tại! Vui lòng đăng ký trước.', false);
         } else {
-          showCustomAlert('Sai mật khẩu! Vui lòng kiểm tra lại.', false);
+          showAlert('Sai số điện thoại/email hoặc mật khẩu!', false);
         }
-        return;
+        return false;
       }
 
       // Đăng nhập thành công -> Lưu session hiện tại
-      localStorage.setItem(STORAGE.CURRENT, JSON.stringify(foundUser));
-      showCustomAlert(`Chào mừng ${foundUser.fullname} đã quay trở lại!`, true, () => {
+      localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+      showAlert(`Chào mừng ${matchedUser.fullname} đã quay trở lại!`, true, () => {
         window.location.href = './index.html';
       });
-    });
+
+      return false;
+    };
   }
+};
 
-  updateNavbarSession();
-});
 
-// =====================================================================
-// 4. QUẢN LÝ GIAO DIỆN NAVBAR & PROFILE DROPDOWN
-// =====================================================================
-function updateNavbarSession() {
+// =========================================================
+// 3. HÀM KIỂM TRA VÀ CẬP NHẬT GIAO DIỆN NAVBAR (ĐỐI VỚI DÙNG CHUNG)
+// =========================================================
+function checkLoginStatus() {
   const navLinks = document.querySelector('.nav-links');
   if (!navLinks) return;
 
-  let currentUser = null;
-  try {
-    currentUser = JSON.parse(localStorage.getItem(STORAGE.CURRENT));
-  } catch (err) {
-    currentUser = null;
-  }
-
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const loginBtn = navLinks.querySelector('a[href="./login.html"]');
 
   if (currentUser) {
-    if (loginBtn) loginBtn.remove();
+    if (loginBtn) {
+      loginBtn.remove();
+    }
 
     if (!document.getElementById('user-profile-menu')) {
       const profileHTML = `
@@ -220,12 +198,12 @@ function updateNavbarSession() {
         navLinks.insertAdjacentHTML('beforeend', profileHTML);
       }
 
-      initDropdownEvents();
+      setupProfileEvents();
     }
   }
 }
 
-function initDropdownEvents() {
+function setupProfileEvents() {
   const avatarBtn = document.getElementById('user-avatar-btn');
   const dropdown = document.getElementById('user-dropdown');
   const logoutBtn = document.getElementById('logout-btn');
@@ -245,8 +223,11 @@ function initDropdownEvents() {
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem(STORAGE.CURRENT);
+      localStorage.removeItem('currentUser');
       window.location.reload();
     });
   }
 }
+
+// Tự động chạy kiểm tra trạng thái ngay khi trang tải xong
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
