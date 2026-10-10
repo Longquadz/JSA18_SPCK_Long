@@ -2,10 +2,10 @@
 // 1. BỘ HÀM BỔ TRỢ (VALIDATE & CUSTOM ALERT)
 // =========================================================
 
-// Hàm kiểm tra định dạng Email hoặc Số điện thoại Việt Nam
+// Hàm kiểm tra định dạng Email hoặc Số điện thoại Việt Nam (Đã fix lỗi biểu thức Regex)
 function isValidUsername(input) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+\$/;
+  const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})\$/;
   return emailRegex.test(input) || phoneRegex.test(input);
 }
 
@@ -42,13 +42,13 @@ function showAlert(message, isSuccess = false, callback = null) {
 // =========================================================
 // 2. XỬ LÝ FORM ĐĂNG KÝ VÀ ĐĂNG NHẬP (TRANG LOGIN/REGISTER)
 // =========================================================
-window.onload = () => {
+document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
 
-  // Xử lý Đăng ký
+  // Xử lý Đăng ký (Hỗ trợ đa tài khoản & Chống trùng lặp tuyệt đối)
   if (registerForm) {
-    registerForm.onsubmit = (e) => {
+    registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
       const fullname = document.getElementById('fullname').value.trim();
@@ -57,33 +57,52 @@ window.onload = () => {
 
       if (!fullname || !username || !password) {
         showAlert('Vui lòng nhập đầy đủ thông tin!', false);
-        return false;
+        return;
       }
 
       if (!isValidUsername(username)) {
         showAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
-        return false;
+        return;
       }
 
       if (password.length < 6) {
         showAlert('Mật khẩu phải có ít nhất 6 ký tự!', false);
-        return false;
+        return;
       }
 
-      const user = { fullname, username, password };
-      localStorage.setItem('registeredUser', JSON.stringify(user));
+      // 1. Lấy danh sách tài khoản từ mảng 'registeredUsers'
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+      // [Phòng hờ dữ liệu cũ đơn lẻ]
+      const oldSingleUser = JSON.parse(localStorage.getItem('registeredUser'));
+      if (oldSingleUser && !users.some(u => u.username === oldSingleUser.username)) {
+        users.push(oldSingleUser);
+      }
+
+      // 2. Kiểm tra xem Email/SĐT này đã tồn tại hay chưa
+      const isExist = users.some(user => user.username.toLowerCase() === username.toLowerCase());
+      if (isExist) {
+        showAlert('❌ Tài khoản (Email/SĐT này) đã được đăng ký trước đó!', false);
+        return;
+      }
+
+      // 3. Thêm user mới vào mảng
+      const newUser = { fullname, username, password };
+      users.push(newUser);
+
+      // 4. Lưu ngược lại vào localStorage và dọn dẹp khóa cũ
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+      localStorage.removeItem('registeredUser');
 
       showAlert('Đăng ký tài khoản thành công!', true, () => {
         window.location.href = './login.html';
       });
-
-      return false;
-    };
+    });
   }
 
   // Xử lý Đăng nhập
   if (loginForm) {
-    loginForm.onsubmit = (e) => {
+    loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
       const usernameInput = document.getElementById('username').value.trim();
@@ -91,39 +110,50 @@ window.onload = () => {
 
       if (!usernameInput || !passwordInput) {
         showAlert('Vui lòng điền đầy đủ thông tin!', false);
-        return false;
+        return;
       }
 
       if (!isValidUsername(usernameInput)) {
         showAlert('Email hoặc Số điện thoại không đúng định dạng!', false);
-        return false;
+        return;
       }
 
-      const savedUser = JSON.parse(localStorage.getItem('registeredUser'));
+      // Lấy danh sách tất cả tài khoản đã đăng ký
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
 
-      if (!savedUser) {
-        showAlert('Tài khoản chưa tồn tại! Vui lòng đăng ký trước.', false);
-        return false;
+      if (users.length === 0) {
+        const oldSingleUser = JSON.parse(localStorage.getItem('registeredUser'));
+        if (oldSingleUser) users.push(oldSingleUser);
       }
 
-      if (savedUser.username !== usernameInput || savedUser.password !== passwordInput) {
-        showAlert('Sai số điện thoại/email hoặc mật khẩu!', false);
-        return false;
+      // Tìm xem có user nào khớp thông tin không
+      const matchedUser = users.find(user => user.username.toLowerCase() === usernameInput.toLowerCase() && user.password === passwordInput);
+
+      if (!matchedUser) {
+        const isUserExist = users.some(user => user.username.toLowerCase() === usernameInput.toLowerCase());
+        if (!isUserExist) {
+          showAlert('Tài khoản chưa tồn tại! Vui lòng đăng ký trước.', false);
+        } else {
+          showAlert('Sai số điện thoại/email hoặc mật khẩu!', false);
+        }
+        return;
       }
 
-      localStorage.setItem('currentUser', JSON.stringify(savedUser));
-      showAlert(`Chào mừng ${savedUser.fullname} đã quay trở lại!`, true, () => {
+      // Đăng nhập thành công
+      localStorage.setItem('currentUser', JSON.stringify(matchedUser));
+      showAlert(`Chào mừng ${matchedUser.fullname} đã quay trở lại!`, true, () => {
         window.location.href = './index.html';
       });
-
-      return false;
-    };
+    });
   }
-};
+
+  // Chạy luôn hàm kiểm tra trạng thái Navbar
+  checkLoginStatus();
+});
 
 
 // =========================================================
-// 3. HÀM KIỂM TRA VÀ CẬP NHẬT GIAO DIỆN NAVBAR (ĐỐI VỚI DÙNG CHUNG)
+// 3. HÀM KIỂM TRA VÀ CẬP NHẬT GIAO DIỆN NAVBAR
 // =========================================================
 function checkLoginStatus() {
   const navLinks = document.querySelector('.nav-links');
@@ -195,6 +225,3 @@ function setupProfileEvents() {
     });
   }
 }
-
-// Tự động chạy kiểm tra trạng thái ngay khi trang tải xong
-document.addEventListener('DOMContentLoaded', checkLoginStatus);
