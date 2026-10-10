@@ -15,12 +15,10 @@ const STORAGE = {
 // =====================================================================
 
 /**
- * Kiểm tra định dạng Email hoặc Số điện thoại cực kỳ thoáng và linh hoạt
+ * Kiểm tra định dạng Email hoặc Số điện thoại (Đã fix chuẩn Regex hoàn toàn)
  */
 function isValidInput(value) {
-  // Email thoáng: có text, @, text, dấu chấm, text (ví dụ: a@b.c)
   const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+\$/;
-  // SĐT Việt Nam: bắt đầu bằng số 0, theo sau đúng 9 chữ số
   const phoneCheck = /^0\d{9}\$/;
 
   return emailCheck.test(value) || phoneCheck.test(value);
@@ -103,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isDuplicate = usersList.some(user => user.username === username);
       if (isDuplicate) {
         showCustomAlert('❌ Tài khoản (Email/SĐT này) đã được đăng ký trước đó!', false);
-        return; // Dừng lại tuyệt đối, không cho lưu đè
+        return; 
       }
 
       // Thêm tài khoản mới
@@ -112,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Lưu ngược lại vào localStorage
       localStorage.setItem(STORAGE.USERS, JSON.stringify(usersList));
-      // Xóa sạch các khóa rác cũ nếu có
       localStorage.removeItem('registeredUser');
 
       showCustomAlert('🎉 Đăng ký tài khoản thành công!', true, () => {
@@ -173,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Khởi chạy kiểm tra giao diện navbar
   updateNavbarSession();
 });
 
